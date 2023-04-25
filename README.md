@@ -1,2 +1,2 @@
 # TDS_Prototype
-A 3D top down shooter game for Rapid Games Prototyping made with Unity.
+A 2D top down shooter game but using 3D assets for Rapid Games Prototyping made with Unity.
