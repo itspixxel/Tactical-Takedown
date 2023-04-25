@@ -3,20 +3,17 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-// Automatically attaches required components to the game object.
-[RequireComponent(typeof(GunController))] 
-[RequireComponent(typeof(PlayerController))] 
-
-public class Player : MonoBehaviour
+public class Player : Entity
 {
     public float playerSpeed = 5.0f;
 
     PlayerController controller;
-    Camera cam;
     GunController gunController;
+    Camera cam;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         controller = GetComponent<PlayerController>();
         gunController = GetComponent<GunController>();
         cam = Camera.main;
@@ -24,20 +21,23 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        // Movement
         Vector3 horizInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
         Vector3 velocity = horizInput.normalized * playerSpeed;
         controller.Move(velocity);
 
+        // Looking at mouse pos
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
         float rayDistance;
 
-        if(groundPlane.Raycast(ray, out rayDistance))
+        if(groundPlane.Raycast(ray, out rayDistance)) // What is out???
         {
             Vector3 point = ray.GetPoint(rayDistance);
             controller.LookAt(point);
         }
 
+        // Shooting on left click
         if (Input.GetMouseButton(0))
         {
             gunController.Shoot();

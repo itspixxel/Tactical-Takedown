@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))] // Automatically attaches a RigidBody to the game object.
 public class PlayerController : MonoBehaviour
 {
     Vector3 velocity;
@@ -26,7 +25,7 @@ public class PlayerController : MonoBehaviour
 
     public void LookAt(Vector3 point)
     {
-        Vector3 correctLookAtPoint = new Vector3 (point.x, transform.position.y, point.z);
+        Vector3 correctLookAtPoint = new Vector3 (point.x, transform.position.y, point.z); // Correct the height of the point the player is looking at
         transform.LookAt(correctLookAtPoint);
     }
 }
