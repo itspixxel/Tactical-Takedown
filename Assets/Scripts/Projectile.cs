@@ -9,6 +9,13 @@ public class Projectile : MonoBehaviour
     private float speed = 10.0f;
     private float damage = 1.0f;
 
+    float lifetime = 2.0f;
+
+    private void Start()
+    {
+        Destroy(gameObject, lifetime);
+    }
+
     void Update()
     {
         float moveDistance = Time.deltaTime * speed;
@@ -37,10 +44,9 @@ public class Projectile : MonoBehaviour
         IDamageable damageable = hit.collider.gameObject.GetComponent<IDamageable>();
         if (damageable != null)
         {
-            damageable.TakeHit(damage, hit);
+            damageable.TakeDamage(damage, hit);
         }
 
-        Debug.Log(hit.collider.gameObject.name);
         GameObject.Destroy(gameObject);
     }
 }
