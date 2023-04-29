@@ -90,7 +90,7 @@ public class Enemy : Entity
             }
     }
 
-    IEnumerator Attack()
+    private IEnumerator Attack()
     {
         currentState = State.ATTACKING;
         agent.enabled = false;

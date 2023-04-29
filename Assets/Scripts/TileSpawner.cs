@@ -21,8 +21,10 @@ public class TileSpawner : MonoBehaviour
 
     private List<Coords> tileCoords;
     private Queue<Coords> shuffledTileCoords;
+    private Queue<Coords> shuffledOpenTileCoords;
+    private Transform[,] tileMap;
 
-    private Level currentLevel;
+    public Level currentLevel;
 
     // Coord Struct
     [System.Serializable]
@@ -58,9 +60,6 @@ public class TileSpawner : MonoBehaviour
         public Coords levelSize;
         public Coords levelCenter { get { return new Coords(levelSize.x / 2, levelSize.y / 2); } }
 
-        //public Color gradientTop;
-        //public Color gradientBottom;
-
         [Range(0, 1)]
         public float wallsAmount;
     }
@@ -74,6 +73,7 @@ public class TileSpawner : MonoBehaviour
     public void GenerateLevel()
     {
         currentLevel = levels[levelIndex];
+        tileMap = new Transform[currentLevel.levelSize.x, currentLevel.levelSize.y];
         System.Random rng = new System.Random(currentLevel.seed);
         GetComponent<BoxCollider>().size = new Vector3(currentLevel.levelSize.x * tileSize, 0.05f, currentLevel.levelSize.y * tileSize);
 
@@ -96,6 +96,7 @@ public class TileSpawner : MonoBehaviour
         Transform levelContainer = new GameObject(container).transform;
         levelContainer.parent = transform;
 
+        // Tile Spawning
         for (int x = 0; x < currentLevel.levelSize.x; x++)
         {
             for (int y = 0; y < currentLevel.levelSize.y; y++)
@@ -104,6 +105,7 @@ public class TileSpawner : MonoBehaviour
                 Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
                 newTile.localScale = Vector3.one * tileScale * tileSize;
                 newTile.parent = levelContainer;
+                tileMap[x, y] = newTile;
             }
         }
 
@@ -112,6 +114,7 @@ public class TileSpawner : MonoBehaviour
 
         int wallsCount = (int)(currentLevel.levelSize.x * currentLevel.levelSize.y * currentLevel.wallsAmount);
         int currentWallsCount = 0;
+        List<Coords> openTileCoords = new List<Coords>(tileCoords);
 
         for (int i = 0; i < wallsCount; i++)
         {
@@ -127,6 +130,8 @@ public class TileSpawner : MonoBehaviour
                 Transform newWall = Instantiate(wallPrefab, wallPosition + Vector3.up * wallHeight / 2, Quaternion.identity);
                 newWall.parent = levelContainer;
                 newWall.localScale = new Vector3((tileScale) * tileSize, wallHeight, (tileScale) * tileSize);
+
+                openTileCoords.Remove(randomCoord);
             }
             else
             {
@@ -135,6 +140,8 @@ public class TileSpawner : MonoBehaviour
                 currentWallsCount--;
             }
         }
+
+        shuffledOpenTileCoords = new Queue<Coords>(FYshuffle(openTileCoords.ToArray(), currentLevel.seed));
 
         Transform leftBound = Instantiate(navMeshBounds, Vector3.left * (currentLevel.levelSize.x + maxLevelSize.x) / 4f * tileSize, Quaternion.identity);
         leftBound.parent = levelContainer;
@@ -247,6 +254,13 @@ public class TileSpawner : MonoBehaviour
         Coords randomCoord = shuffledTileCoords.Dequeue();
         shuffledTileCoords.Enqueue(randomCoord);
         return randomCoord;
+    }
+
+    public Transform GetRandomOpenTile()
+    {
+        Coords randomCoord = shuffledOpenTileCoords.Dequeue();
+        shuffledOpenTileCoords.Enqueue(randomCoord);
+        return tileMap[randomCoord.x, randomCoord.y];
     }
 
     // Convert 2D coords to 3D
