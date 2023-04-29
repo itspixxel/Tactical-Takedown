@@ -64,8 +64,14 @@ public class TileSpawner : MonoBehaviour
         public float wallsAmount;
     }
 
-    void Start()
+    void Awake()
     {
+        FindObjectOfType<EnemySpawner>().OnNewWave += OnNewWave;
+    }
+
+    void OnNewWave(int waveNum)
+    {
+        levelIndex = waveNum - 1;
         GenerateLevel();
     }
 
@@ -247,6 +253,15 @@ public class TileSpawner : MonoBehaviour
 
         return count;
     }
+
+    //public Transform GetTileFromPosition(Vector3 position)
+    //{
+    //    int x = Mathf.RoundToInt(position.x / tileSize + (currentLevel.levelSize.x - 1) / 2f);
+    //    int y = Mathf.RoundToInt(position.z / tileSize + (currentLevel.levelSize.y - 1) / 2f);
+    //    x = Mathf.Clamp(x, 0, tileMap.GetLength(0) - 1);
+    //    y = Mathf.Clamp(y, 0, tileMap.GetLength(1) - 1);
+    //    return tileMap[x, y];
+    //}
 
     // Get a random coord out of the shuffled tiles
     public Coords GetRandomCoord()

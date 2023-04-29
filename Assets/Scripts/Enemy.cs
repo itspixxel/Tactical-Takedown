@@ -41,7 +41,7 @@ public class Enemy : Entity
             if (target != null)
             {
                 targetEntity = target.GetComponent<Entity>();
-                targetEntity.onDeath += onPlayerDeath;
+                targetEntity.OnDeath += onPlayerDeath;
                 enemyCollisionRadius = GetComponent<CapsuleCollider>().radius;
                 playerCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
             }
@@ -81,7 +81,7 @@ public class Enemy : Entity
                         Vector3 targetDir = (target.transform.position - transform.position).normalized;
                         Vector3 targetPos = target.transform.position - targetDir * (enemyCollisionRadius + playerCollisionRadius + attackDistance / 2);
 
-                        if (isAlive)
+                        if (!isDead)
                         {
                             agent.SetDestination(targetPos);
                         }

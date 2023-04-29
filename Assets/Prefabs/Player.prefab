@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93abf9d2cd973ef4f913e5e2640de57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 5
+  startingHealth: 10
   playerSpeed: 5
 --- !u!114 &3248176972883736799
 MonoBehaviour:
@@ -221,5 +221,5 @@ Transform:
   m_Children:
   - {fileID: 3248176972883736797}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

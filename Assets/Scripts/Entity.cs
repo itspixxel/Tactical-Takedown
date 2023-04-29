@@ -5,41 +5,42 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour, IDamageable
 {
-    public float health;
+    public float startingHealth;
 
-    protected float m_health;
-    protected bool isAlive = true;
+    protected float health;
+    protected bool isDead;
 
-    public event System.Action onDeath;
+    public event System.Action OnDeath;
 
     protected virtual void Start()
     {
-        m_health = health;
+        health = startingHealth;
     }
 
-    public void TakeDamage(float damageAmount, RaycastHit hit)
+    public void TakeHit(float damage, RaycastHit hit)
     {
-        m_health -= damageAmount;
-
-        if (m_health <= 0 && isAlive)
-        {
-            isAlive = false;
-            if (onDeath != null)
-            {
-                onDeath();
-            }
-            Destroy(gameObject);
-        }
+        // Do some stuff here with hit var
+        TakeDamage(damage);
     }
 
     public void TakeDamage(float damage)
     {
-        m_health -= damage;
+        health -= damage;
 
-        if (m_health <= 0 && isAlive)
+        if (health <= 0 && !isDead)
         {
-            isAlive = false;
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    [ContextMenu("Self Destruct")]
+    protected void Die()
+    {
+        isDead = true;
+        if (OnDeath != null)
+        {
+            OnDeath();
+        }
+        GameObject.Destroy(gameObject);
     }
 }

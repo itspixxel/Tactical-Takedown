@@ -31,7 +31,7 @@ public class Player : Entity
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
         float rayDistance;
 
-        if(groundPlane.Raycast(ray, out rayDistance)) // What is out???
+        if(groundPlane.Raycast(ray, out rayDistance))
         {
             Vector3 point = ray.GetPoint(rayDistance);
             controller.LookAt(point);

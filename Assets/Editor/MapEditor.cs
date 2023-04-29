@@ -15,7 +15,7 @@ public class MapEditor : Editor
             tileSpawner.GenerateLevel();
         }
 
-        if (GUILayout.Button("Generate New Level"))
+        if (GUILayout.Button("Generate Level"))
         {
             tileSpawner.GenerateLevel();
         }
