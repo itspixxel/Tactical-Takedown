@@ -58,8 +58,8 @@ public class TileSpawner : MonoBehaviour
         public Coords levelSize;
         public Coords levelCenter { get { return new Coords(levelSize.x / 2, levelSize.y / 2); } }
 
-        public Color gradientTop;
-        public Color gradientBottom;
+        //public Color gradientTop;
+        //public Color gradientBottom;
 
         [Range(0, 1)]
         public float wallsAmount;
@@ -75,6 +75,7 @@ public class TileSpawner : MonoBehaviour
     {
         currentLevel = levels[levelIndex];
         System.Random rng = new System.Random(currentLevel.seed);
+        GetComponent<BoxCollider>().size = new Vector3(currentLevel.levelSize.x * tileSize, 0.05f, currentLevel.levelSize.y * tileSize);
 
         tileCoords = new List<Coords>();
         for (int x = 0; x < currentLevel.levelSize.x; x++)
@@ -135,22 +136,21 @@ public class TileSpawner : MonoBehaviour
             }
         }
 
-        Transform leftBound = Instantiate(navMeshBounds, Vector3.left * (currentLevel.levelSize.x + maxLevelSize.x) / 4 * tileSize, Quaternion.identity);
+        Transform leftBound = Instantiate(navMeshBounds, Vector3.left * (currentLevel.levelSize.x + maxLevelSize.x) / 4f * tileSize, Quaternion.identity);
         leftBound.parent = levelContainer;
-        leftBound.localScale = new Vector3((maxLevelSize.x - currentLevel.levelSize.x) / 2, 1, currentLevel.levelSize.y) * tileSize;
+        leftBound.localScale = new Vector3((maxLevelSize.x - currentLevel.levelSize.x) / 2f, 1, currentLevel.levelSize.y) * tileSize;
 
-        Transform rightBound = Instantiate(navMeshBounds, Vector3.right * (currentLevel.levelSize.x + maxLevelSize.x) / 4 * tileSize, Quaternion.identity);
+        Transform rightBound = Instantiate(navMeshBounds, Vector3.right * (currentLevel.levelSize.x + maxLevelSize.x) / 4f * tileSize, Quaternion.identity);
         rightBound.parent = levelContainer;
-        rightBound.localScale = new Vector3((maxLevelSize.x - currentLevel.levelSize.x) / 2, 1, currentLevel.levelSize.y) * tileSize;
+        rightBound.localScale = new Vector3((maxLevelSize.x - currentLevel.levelSize.x) / 2f, 1, currentLevel.levelSize.y) * tileSize;
 
-        Transform topBound = Instantiate(navMeshBounds, Vector3.forward * (currentLevel.levelSize.x + maxLevelSize.x) / 4 * tileSize, Quaternion.identity);
+        Transform topBound = Instantiate(navMeshBounds, Vector3.forward * (currentLevel.levelSize.x + maxLevelSize.x) / 4f * tileSize, Quaternion.identity);
         topBound.parent = levelContainer;
-        topBound.localScale = new Vector3(maxLevelSize.x, 1, (maxLevelSize.x - currentLevel.levelSize.x) / 2) * tileSize;
+        topBound.localScale = new Vector3(maxLevelSize.x, 1, (maxLevelSize.x - currentLevel.levelSize.x) / 2f) * tileSize;
 
-        Transform bottomBound = Instantiate(navMeshBounds, Vector3.back * (currentLevel.levelSize.x + maxLevelSize.x) / 4 * tileSize, Quaternion.identity);
+        Transform bottomBound = Instantiate(navMeshBounds, Vector3.back * (currentLevel.levelSize.x + maxLevelSize.x) / 4f * tileSize, Quaternion.identity);
         bottomBound.parent = levelContainer;
-        bottomBound.localScale = new Vector3(maxLevelSize.x, 1, (maxLevelSize.x - currentLevel.levelSize.x) / 2) * tileSize;
-
+        bottomBound.localScale = new Vector3(maxLevelSize.x, 1, (maxLevelSize.x - currentLevel.levelSize.x) / 2f) * tileSize;
 
         navMeshFloor.localScale = new Vector3(maxLevelSize.x, maxLevelSize.y) * tileSize;
     }
@@ -252,6 +252,6 @@ public class TileSpawner : MonoBehaviour
     // Convert 2D coords to 3D
     Vector3 CoordsToPos(int x, int y)
     {
-        return new Vector3(-currentLevel.levelSize.x / 2 + 0.5f + x, 0, -currentLevel.levelSize.y / 2 + 0.5f + y) * tileSize;
+        return new Vector3(-currentLevel.levelSize.x / 2f + 0.5f + x, 0, -currentLevel.levelSize.y / 2f + 0.5f + y) * tileSize;
     }
 }

@@ -3,7 +3,11 @@ guid: 03ce4583a73ffe24d9982c5d8c8be8f1
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - tilePrefab: {instanceID: 0}
+  - wallPrefab: {instanceID: 0}
+  - navMeshFloor: {instanceID: 0}
+  - navMeshBounds: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

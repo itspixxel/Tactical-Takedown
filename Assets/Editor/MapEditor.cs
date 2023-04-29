@@ -1,16 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 
 [CustomEditor (typeof(TileSpawner))]
 public class MapEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
-
         TileSpawner tileSpawner = (TileSpawner)target;
 
-        tileSpawner.GenerateLevel();
+        if (DrawDefaultInspector())
+        { 
+            tileSpawner.GenerateLevel();
+        }
+
+        if (GUILayout.Button("Generate New Level"))
+        {
+            tileSpawner.GenerateLevel();
+        }
+
     }
 }
