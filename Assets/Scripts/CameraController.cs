@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OrthoCamScaler : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
     public TileSpawner spawner;
     public float orthoScaleLerpSpeed = 2f;

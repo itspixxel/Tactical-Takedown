@@ -1,26 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class Projectile : MonoBehaviour
 {
-    public LayerMask layerMask;
 
-    private float speed = 10.0f;
-    private float damage = 1.0f;
+    public LayerMask collisionMask;
+    private float speed = 10;
+    private float damage = 1;
 
-    float lifetime = 2.0f;
+    private float lifetime = 2;
+    private float compensation = 0.2f;
 
-    private void Start()
+    void Start()
     {
         Destroy(gameObject, lifetime);
-    }
 
-    void Update()
-    {
-        float moveDistance = Time.deltaTime * speed;
-        CheckCollisions(moveDistance);
-        transform.Translate(Vector3.forward * moveDistance);
+        Collider[] initialCollisions = Physics.OverlapSphere(transform.position, .1f, collisionMask);
+        if (initialCollisions.Length > 0)
+        {
+            OnHitObject(initialCollisions[0], transform.position);
+        }
     }
 
     public void SetSpeed(float newSpeed)
@@ -28,25 +27,32 @@ public class Projectile : MonoBehaviour
         speed = newSpeed;
     }
 
+    void Update()
+    {
+        float moveDistance = speed * Time.deltaTime;
+        CheckCollisions(moveDistance);
+        transform.Translate(Vector3.forward * moveDistance);
+    }
+
+
     void CheckCollisions(float moveDistance)
     {
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, moveDistance, layerMask, QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(ray, out hit, moveDistance + compensation, collisionMask, QueryTriggerInteraction.Collide))
         {
-            onHitActor(hit);
+            OnHitObject(hit.collider, hit.point);
         }
     }
 
-    void onHitActor(RaycastHit hit)
+    void OnHitObject(Collider c, Vector3 hitPoint)
     {
-        IDamageable damageable = hit.collider.gameObject.GetComponent<IDamageable>();
-        if (damageable != null)
+        IDamageable damageableObject = c.GetComponent<IDamageable>();
+        if (damageableObject != null)
         {
-            damageable.TakeHit(damage, hit);
+            damageableObject.TakeHit(damage, hitPoint, transform.forward);
         }
-
         GameObject.Destroy(gameObject);
     }
 }

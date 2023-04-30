@@ -17,13 +17,13 @@ public class Entity : MonoBehaviour, IDamageable
         health = startingHealth;
     }
 
-    public void TakeHit(float damage, RaycastHit hit)
+    public virtual void TakeHit(float damage, Vector3 impactPoint, Vector3 impactDirection)
     {
         // Do some stuff here with hit var
         TakeDamage(damage);
     }
 
-    public void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage)
     {
         health -= damage;
 
@@ -33,7 +33,6 @@ public class Entity : MonoBehaviour, IDamageable
         }
     }
 
-    [ContextMenu("Self Destruct")]
     protected void Die()
     {
         isDead = true;

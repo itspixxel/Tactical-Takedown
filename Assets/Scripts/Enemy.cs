@@ -16,6 +16,7 @@ public class Enemy : Entity
 
     private NavMeshAgent agent;
     private GameObject target;
+    public GameObject deathEffect;
 
     private Entity targetEntity;
 
@@ -46,6 +47,15 @@ public class Enemy : Entity
                 playerCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
             }
         }
+    }
+
+    public override void TakeHit(float damage, Vector3 impactPoint, Vector3 impactDirection)
+    {
+        if (damage >= health)
+        {
+            Destroy(Instantiate(deathEffect, impactPoint, Quaternion.FromToRotation(Vector3.forward, impactDirection)), 2f); // Unity's good at mafs
+        }
+        base.TakeHit(damage, impactPoint, impactDirection);
     }
 
     private void onPlayerDeath()
