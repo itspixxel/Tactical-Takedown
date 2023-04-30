@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -29,10 +30,14 @@ public class Enemy : Entity
     private float enemyCollisionRadius;
     private float playerCollisionRadius;
 
+    private void Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+    }
+
     protected override void Start()
     {
         base.Start();
-        agent = GetComponent<NavMeshAgent>();
 
         if (GameObject.FindGameObjectsWithTag("Player") != null )
         {
@@ -51,7 +56,7 @@ public class Enemy : Entity
 
     public override void TakeHit(float damage, Vector3 impactPoint, Vector3 impactDirection)
     {
-        if (damage >= health)
+        if (damage >= m_health)
         {
             Destroy(Instantiate(deathEffect, impactPoint, Quaternion.FromToRotation(Vector3.forward, impactDirection)), 2f); // Unity's good at mafs
         }
@@ -131,5 +136,15 @@ public class Enemy : Entity
 
         currentState = State.CHASING;
         agent.enabled = true;
+    }
+
+    public void SetAttributes(float enemySpeed, float enemyHealth, int hitsToKill)
+    {
+        agent.speed = enemySpeed;
+        if (target != null)
+        {
+            damage = Mathf.Ceil(targetEntity.startingHealth / hitsToKill);
+        }
+        startingHealth = enemyHealth;
     }
 }

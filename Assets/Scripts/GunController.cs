@@ -5,6 +5,7 @@ using UnityEngine;
 public class GunController : MonoBehaviour
 {
     Gun equippedGun;
+
     public Gun starterGun;
     public Transform holdPoint;
 
@@ -22,15 +23,31 @@ public class GunController : MonoBehaviour
         {
             Destroy(equippedGun.gameObject);
         }
-        equippedGun = Instantiate((Gun)gunToEquip, holdPoint.position, holdPoint.rotation);
+        equippedGun = Instantiate(gunToEquip, holdPoint.position, holdPoint.rotation);
         equippedGun.transform.parent = holdPoint;
     }
 
-    public void Shoot()
+    public void Reload()
+    {
+        if (equippedGun == null)
+        {
+            equippedGun.Reload();
+        }
+    }
+
+    public void OnTriggerHold()
     {
         if (equippedGun != null )
         {
-            equippedGun.Shoot();
+            equippedGun.OnTriggerHold();
+        }
+    }
+
+    public void OnTriggerRelease()
+    {
+        if (equippedGun != null )
+        {
+            equippedGun.OnTriggerRelease();
         }
     }
 }

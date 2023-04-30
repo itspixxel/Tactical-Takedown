@@ -6,7 +6,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public class EnemySpawner : MonoBehaviour
 {
     public Wave[] waves;
-    public Enemy enemy;
+    public GameObject enemy;
     public Color flashColor;
 
     Entity playerEntity;
@@ -26,8 +26,13 @@ public class EnemySpawner : MonoBehaviour
     [System.Serializable]
     public class Wave
     {
+        public bool isInfinite;
         public int enemyCount;
         public float spawnRate;
+
+        public float enemySpeed;
+        public float enemyHealth;
+        public int hitsToKill;
     }
 
     private void Start()
@@ -40,7 +45,7 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        if (enemiesToSpawn > 0 && Time.time > nextSpawnTime)
+        if ((enemiesToSpawn > 0 || currentWave.isInfinite) && Time.time > nextSpawnTime)
         {
             enemiesToSpawn--;
             nextSpawnTime = Time.time + currentWave.spawnRate;
@@ -65,9 +70,12 @@ public class EnemySpawner : MonoBehaviour
             spawnTimer += Time.deltaTime;
             yield return null;
         }
+        tileMat.color = initialCol;
 
-        Enemy newEnemy = Instantiate(enemy, randomTile.position + Vector3.up, Quaternion.identity);
-        newEnemy.OnDeath += onEnemyDeath;
+        GameObject newEnemy = Instantiate(enemy, randomTile.position + Vector3.up, Quaternion.identity);
+        Enemy enemyClass = newEnemy.GetComponent<Enemy>();
+        enemyClass.SetAttributes(currentWave.enemySpeed, currentWave.enemyHealth, currentWave.hitsToKill);
+        enemyClass.OnDeath += onEnemyDeath;
     }
 
     void NextWave()

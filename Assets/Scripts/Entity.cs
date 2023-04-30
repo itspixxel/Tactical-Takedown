@@ -7,14 +7,14 @@ public class Entity : MonoBehaviour, IDamageable
 {
     public float startingHealth;
 
-    protected float health;
+    protected float m_health;
     protected bool isDead;
 
     public event System.Action OnDeath;
 
     protected virtual void Start()
     {
-        health = startingHealth;
+        m_health = startingHealth;
     }
 
     public virtual void TakeHit(float damage, Vector3 impactPoint, Vector3 impactDirection)
@@ -25,9 +25,9 @@ public class Entity : MonoBehaviour, IDamageable
 
     public virtual void TakeDamage(float damage)
     {
-        health -= damage;
+        m_health -= damage;
 
-        if (health <= 0 && !isDead)
+        if (m_health <= 0 && !isDead)
         {
             Die();
         }

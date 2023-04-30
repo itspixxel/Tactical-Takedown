@@ -40,7 +40,16 @@ public class Player : Entity
         // Shooting on left click
         if (Input.GetMouseButton(0))
         {
-            gunController.Shoot();
+            gunController.OnTriggerHold();
+        }
+        if (Input.GetMouseButtonUp(0)) 
+        {
+            gunController.OnTriggerRelease();
+        }
+        // Reload on pressing R
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            gunController.Reload();
         }
     }
 }

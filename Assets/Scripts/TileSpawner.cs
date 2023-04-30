@@ -69,6 +69,7 @@ public class TileSpawner : MonoBehaviour
         FindObjectOfType<EnemySpawner>().OnNewWave += OnNewWave;
     }
 
+    // Generate new level when new wave starts
     void OnNewWave(int waveNum)
     {
         levelIndex = waveNum - 1;
@@ -148,7 +149,8 @@ public class TileSpawner : MonoBehaviour
         }
 
         shuffledOpenTileCoords = new Queue<Coords>(FYshuffle(openTileCoords.ToArray(), currentLevel.seed));
-
+        
+        // Level navmesh masking bounds
         Transform leftBound = Instantiate(navMeshBounds, Vector3.left * (currentLevel.levelSize.x + maxLevelSize.x) / 4f * tileSize, Quaternion.identity);
         leftBound.parent = levelContainer;
         leftBound.localScale = new Vector3((maxLevelSize.x - currentLevel.levelSize.x) / 2f, 1, currentLevel.levelSize.y) * tileSize;
@@ -182,48 +184,6 @@ public class TileSpawner : MonoBehaviour
 	}
 
     // Checks if the map is fully accessible
-
-    // Checking each neighbor individually (SLOWER)
-    //private bool IsFullyAccessible(bool[,] wallsMap, int currentWallsAmount)
-    //{
-    //    bool[,] visitedTilesMap = new bool[wallsMap.GetLength(0), wallsMap.GetLength(1)];
-    //    Queue<Coords> queue = new Queue<Coords>();
-    //    queue.Enqueue(currentLevel.levelCenter);
-    //    visitedTilesMap[currentLevel.levelCenter.x, currentLevel.levelCenter.y] = true;
-
-    //    int accessibleTileCount = 1;
-
-    //    // DON'T TOUCH | IT'S HIDEOUS BUT IT WORKS
-    //    while (queue.Count > 0)
-    //    {
-    //        Coords tile = queue.Dequeue();
-
-    //        for (int x = -1; x <= 1; x++)
-    //        {
-    //            for (int y = -1; y <= 1; y++)
-    //            {
-    //                int neighbourTileX = tile.x + x;
-    //                int neighbourTileY = tile.y + y;
-    //                if (x == 0 || y == 0)
-    //                {
-    //                    if (neighbourTileX >= 0 && neighbourTileX < wallsMap.GetLength(0) && neighbourTileY >= 0 && neighbourTileY < wallsMap.GetLength(1))
-    //                    {
-    //                        if (!visitedTilesMap[neighbourTileX, neighbourTileY] && !wallsMap[neighbourTileX, neighbourTileY])
-    //                        {
-    //                            visitedTilesMap[neighbourTileX, neighbourTileY] = true;
-    //                            queue.Enqueue(new Coords(neighbourTileX, neighbourTileY));
-    //                            accessibleTileCount++;
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    int targetAccessibleTileCount = (int)(currentLevel.levelSize.x * currentLevel.levelSize.y - currentWallsAmount);
-    //    return targetAccessibleTileCount == accessibleTileCount;
-    //}
-
     // Flood fill method (FASTER)
     private bool IsFullyAccessible(bool[,] wallsMap, int currentWallsAmount)
     {
@@ -254,15 +214,6 @@ public class TileSpawner : MonoBehaviour
         return count;
     }
 
-    //public Transform GetTileFromPosition(Vector3 position)
-    //{
-    //    int x = Mathf.RoundToInt(position.x / tileSize + (currentLevel.levelSize.x - 1) / 2f);
-    //    int y = Mathf.RoundToInt(position.z / tileSize + (currentLevel.levelSize.y - 1) / 2f);
-    //    x = Mathf.Clamp(x, 0, tileMap.GetLength(0) - 1);
-    //    y = Mathf.Clamp(y, 0, tileMap.GetLength(1) - 1);
-    //    return tileMap[x, y];
-    //}
-
     // Get a random coord out of the shuffled tiles
     public Coords GetRandomCoord()
     {
@@ -271,6 +222,7 @@ public class TileSpawner : MonoBehaviour
         return randomCoord;
     }
 
+    // Gets a random unoccupied tile
     public Transform GetRandomOpenTile()
     {
         Coords randomCoord = shuffledOpenTileCoords.Dequeue();
