@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 public class Gun : MonoBehaviour
@@ -13,6 +10,10 @@ public class Gun : MonoBehaviour
         AUTO
     }
     public Mode mode;
+
+    public AudioSource audioSource;
+    public AudioClip shootSoundClip;
+    public AudioClip reloadSoundClip;
 
     public Transform[] muzzles;
     public Transform bulletSpawnPoint;
@@ -72,13 +73,20 @@ public class Gun : MonoBehaviour
                 shotDelay = Time.time + fireRate / 1000;
                 Projectile newProjectile = Instantiate(bullet, muzzles[i].position, muzzles[i].rotation);
                 newProjectile.SetSpeed(bulletVelocity);
+                audioSource.clip = shootSoundClip;
+                audioSource.PlayOneShot(shootSoundClip);
             }
         }
     }
 
     public void Reload()
     {
-        StartCoroutine(Reloading());
+        if (!isReloading && bulletsRemainingInMag != magSize)
+        {
+            StartCoroutine(Reloading());
+            audioSource.clip = reloadSoundClip;
+            audioSource.PlayOneShot(reloadSoundClip);
+        }
     }
 
     private IEnumerator Reloading()

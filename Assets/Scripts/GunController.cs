@@ -1,20 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GunController : MonoBehaviour
 {
     Gun equippedGun;
 
-    public Gun starterGun;
+    public Gun[] guns;
     public Transform holdPoint;
 
     private void Start()
     {
-        if (starterGun != null)
-        {
-            Equip(starterGun);
-        }
+        
     }
     
     public void Equip(Gun gunToEquip)
@@ -25,6 +20,11 @@ public class GunController : MonoBehaviour
         }
         equippedGun = Instantiate(gunToEquip, holdPoint.position, holdPoint.rotation);
         equippedGun.transform.parent = holdPoint;
+    }
+    
+    public void Equip(int gunIndex)
+    {
+        Equip(guns[gunIndex]);
     }
 
     public void Reload()

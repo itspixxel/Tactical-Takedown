@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using UnityEditor.UI;
 
 public class TileSpawner : MonoBehaviour
 {
@@ -69,6 +70,14 @@ public class TileSpawner : MonoBehaviour
         FindObjectOfType<EnemySpawner>().OnNewWave += OnNewWave;
     }
 
+    private void Start()
+    {
+        for (int i = 0; i < levels.Length; i++)
+        {
+            levels[i].seed = Random.Range(-999, 999);
+        }
+    }
+
     // Generate new level when new wave starts
     void OnNewWave(int waveNum)
     {
@@ -109,7 +118,7 @@ public class TileSpawner : MonoBehaviour
             for (int y = 0; y < currentLevel.levelSize.y; y++)
             {
                 Vector3 tilePosition = CoordsToPos(x, y);
-                Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
+                Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90));
                 newTile.localScale = Vector3.one * tileScale * tileSize;
                 newTile.parent = levelContainer;
                 tileMap[x, y] = newTile;

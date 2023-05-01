@@ -1,12 +1,14 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using System;
 
 public class Enemy : Entity
 {
+    public static event System.Action OnDeathStatic;
+    
     public enum State
     {
         IDLE,
@@ -47,7 +49,7 @@ public class Enemy : Entity
             if (target != null)
             {
                 targetEntity = target.GetComponent<Entity>();
-                targetEntity.OnDeath += onPlayerDeath;
+                targetEntity.OnDeath += OnPlayerDeath;
                 enemyCollisionRadius = GetComponent<CapsuleCollider>().radius;
                 playerCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
             }
@@ -58,12 +60,16 @@ public class Enemy : Entity
     {
         if (damage >= m_health)
         {
+            if (OnDeathStatic != null)
+            {
+                OnDeathStatic();
+            }
             Destroy(Instantiate(deathEffect, impactPoint, Quaternion.FromToRotation(Vector3.forward, impactDirection)), 2f); // Unity's good at mafs
         }
         base.TakeHit(damage, impactPoint, impactDirection);
     }
 
-    private void onPlayerDeath()
+    private void OnPlayerDeath()
     {
         if (target = null)
         {

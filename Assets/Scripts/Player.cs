@@ -1,22 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class Player : Entity
 {
     public float playerSpeed = 5.0f;
+    public bool isWalking;
 
+    TileSpawner tileSpawner;
     PlayerController controller;
     GunController gunController;
     Camera cam;
 
-    protected override void Start()
+    private void Awake()
     {
-        base.Start();
         controller = GetComponent<PlayerController>();
         gunController = GetComponent<GunController>();
         cam = Camera.main;
+        FindObjectOfType<EnemySpawner>().OnNewWave += OnNewWave;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+    }
+
+    private void OnNewWave(int currentWaveNum)
+    {
+        m_health = startingHealth;
+        Debug.Log(currentWaveNum);
+        gunController.Equip(currentWaveNum - 1);
     }
 
     void Update()
@@ -25,6 +36,8 @@ public class Player : Entity
         Vector3 horizInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
         Vector3 velocity = horizInput.normalized * playerSpeed;
         controller.Move(velocity);
+
+        //isWalking = horizInput != Vector3.zero;
 
         // Looking at mouse pos
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -35,6 +48,11 @@ public class Player : Entity
         {
             Vector3 point = ray.GetPoint(rayDistance);
             controller.LookAt(point);
+        }
+
+        if (transform.position.y < -5f)
+        {
+            Die();
         }
 
         // Shooting on left click
@@ -51,5 +69,10 @@ public class Player : Entity
         {
             gunController.Reload();
         }
+    }
+
+    public bool IsWalking()
+    {
+        return isWalking;
     }
 }
