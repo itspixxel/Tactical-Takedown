@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public TileSpawner spawner;
+
     public float orthoScaleLerpSpeed = 2f;
 
     private Camera cam;

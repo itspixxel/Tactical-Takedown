@@ -9,6 +9,7 @@ public class UIController : MonoBehaviour
     public GameObject healthUI;
     public GameObject timerUI;
     public GameObject scoreUI;
+    public ScoreManager scoreManager;
 
     public Text scoreText;
 
@@ -31,7 +32,7 @@ public class UIController : MonoBehaviour
 
         if (player != null)
         {
-            scoreText.text = ScoreManager.score.ToString("D6");
+            scoreText.text = ScoreManager.score.ToString("000000");
             float healthPercent = player.m_health / player.startingHealth;
             healthBar.localScale = new Vector3(healthPercent, 1, 1);
         }
@@ -73,6 +74,9 @@ public class UIController : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1.0f;
+        Timer timerUITimer = timerUI.GetComponent<Timer>();
+        timerUITimer.ResetTimer();
+        scoreManager.ResetScore();
         SceneManager.LoadScene("Game");
     }
 }

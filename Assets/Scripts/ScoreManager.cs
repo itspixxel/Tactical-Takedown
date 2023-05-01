@@ -32,6 +32,11 @@ public class ScoreManager : MonoBehaviour
         score += 5 + (int)Mathf.Pow(2, streakCount);
     }
 
+    public void ResetScore()
+    {
+        score = 0;
+    }
+
     void OnPlayerDeath()
     {
         Enemy.OnDeathStatic -= OnEnemyKilled;

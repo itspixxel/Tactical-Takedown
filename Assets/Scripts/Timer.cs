@@ -28,7 +28,14 @@ public class Timer : MonoBehaviour
     private void Update()
     {
         // Update the current time based on whether the timer is counting up or down
-        currentTime = countDown ? currentTime -= Time.deltaTime : currentTime += Time.deltaTime;
+        if (countDown && isCounting)
+        {
+            currentTime -= Time.deltaTime;
+        }
+        else if (!countDown && isCounting)
+        {
+            currentTime += Time.deltaTime;
+        }
 
         // If the timer has a limit and that limit has been reached, stop the timer and change its color to red
         if (hasLimit && ((countDown && currentTime <= timerLimit) || (!countDown && currentTime >= timerLimit)))
@@ -43,10 +50,7 @@ public class Timer : MonoBehaviour
         }
 
         // Update the timer text with the current time
-        if (isCounting)
-        {
-            SetTimerText();
-        }
+        SetTimerText();
     }
 
     // Update the timer text with the current time
@@ -55,13 +59,8 @@ public class Timer : MonoBehaviour
         timerText.text = currentTime.ToString("0.00");
     }
 
-    public void StopTimer()
+    public void ResetTimer()
     {
-        isCounting = false;
-    }
-
-    public void ResumeTimer()
-    {
-        isCounting = false;
+        currentTime = 0f;
     }
 }

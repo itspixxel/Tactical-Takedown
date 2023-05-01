@@ -1,8 +1,5 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using UnityEditor.UI;
 
 public class TileSpawner : MonoBehaviour
 {
