@@ -98,6 +98,7 @@ public class TileSpawner : MonoBehaviour
                 tileCoords.Add(new Coords(x, y));
             }
         }
+
         shuffledTileCoords = new Queue<Coords>(FYshuffle(tileCoords.ToArray(), currentLevel.seed));
 
         string container = "Generated";
@@ -190,7 +191,6 @@ public class TileSpawner : MonoBehaviour
 	}
 
     // Checks if the map is fully accessible
-    // Flood fill method (FASTER)
     private bool IsFullyAccessible(bool[,] wallsMap, int currentWallsAmount)
     {
         bool[,] visitedTilesMap = new bool[wallsMap.GetLength(0), wallsMap.GetLength(1)];
@@ -201,6 +201,7 @@ public class TileSpawner : MonoBehaviour
         return targetAccessibleTileCount == accessibleTileCount;
     }
 
+    // Flood fill method (FASTER)
     private int FloodFill(bool[,] wallsMap, bool[,] visitedTilesMap, int x, int y)
     {
         if (x < 0 || x >= wallsMap.GetLength(0) || y < 0 || y >= wallsMap.GetLength(1) || visitedTilesMap[x, y] || wallsMap[x, y])

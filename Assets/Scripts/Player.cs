@@ -26,7 +26,6 @@ public class Player : Entity
     private void OnNewWave(int currentWaveNum)
     {
         m_health = startingHealth;
-        Debug.Log(currentWaveNum);
         gunController.Equip(currentWaveNum - 1);
     }
 
@@ -37,7 +36,7 @@ public class Player : Entity
         Vector3 velocity = horizInput.normalized * playerSpeed;
         controller.Move(velocity);
 
-        //isWalking = horizInput != Vector3.zero;
+        isWalking = horizInput != Vector3.zero;
 
         // Looking at mouse pos
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);

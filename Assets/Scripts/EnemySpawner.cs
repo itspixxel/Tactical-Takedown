@@ -98,7 +98,7 @@ public class EnemySpawner : MonoBehaviour
 
     void ResetPlayerPos()
     {
-        playerTransform.position = tileSpawner.GetRandomOpenTile().position + Vector3.up * 2f;
+        playerTransform.position = tileSpawner.GetRandomOpenTile().position + Vector3.up;
     }
 
     void onEnemyDeath()

@@ -50,8 +50,8 @@ public class Enemy : Entity
             {
                 targetEntity = target.GetComponent<Entity>();
                 targetEntity.OnDeath += OnPlayerDeath;
-                enemyCollisionRadius = GetComponent<CapsuleCollider>().radius;
-                playerCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
+                enemyCollisionRadius = GetComponentInChildren<CapsuleCollider>().radius;
+                playerCollisionRadius = target.GetComponentInChildren<CapsuleCollider>().radius;
             }
         }
     }
