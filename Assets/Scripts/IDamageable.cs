@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public interface IDamageable
 {
-    void TakeDamage(float damage, RaycastHit hit);
+    void TakeHit(float damage, Vector3 impactPoint, Vector3 impactDirection);
     void TakeDamage(float damage);
 }

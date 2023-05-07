@@ -1,7 +1,5 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 
 public class TileSpawner : MonoBehaviour
 {
@@ -21,8 +19,10 @@ public class TileSpawner : MonoBehaviour
 
     private List<Coords> tileCoords;
     private Queue<Coords> shuffledTileCoords;
+    private Queue<Coords> shuffledOpenTileCoords;
+    private Transform[,] tileMap;
 
-    private Level currentLevel;
+    public Level currentLevel;
 
     // Coord Struct
     [System.Serializable]
@@ -58,15 +58,27 @@ public class TileSpawner : MonoBehaviour
         public Coords levelSize;
         public Coords levelCenter { get { return new Coords(levelSize.x / 2, levelSize.y / 2); } }
 
-        //public Color gradientTop;
-        //public Color gradientBottom;
-
         [Range(0, 1)]
         public float wallsAmount;
     }
 
-    void Start()
+    void Awake()
     {
+        FindObjectOfType<EnemySpawner>().OnNewWave += OnNewWave;
+    }
+
+    private void Start()
+    {
+        for (int i = 0; i < levels.Length; i++)
+        {
+            levels[i].seed = Random.Range(-999, 999);
+        }
+    }
+
+    // Generate new level when new wave starts
+    void OnNewWave(int waveNum)
+    {
+        levelIndex = waveNum - 1;
         GenerateLevel();
     }
 
@@ -74,6 +86,7 @@ public class TileSpawner : MonoBehaviour
     public void GenerateLevel()
     {
         currentLevel = levels[levelIndex];
+        tileMap = new Transform[currentLevel.levelSize.x, currentLevel.levelSize.y];
         System.Random rng = new System.Random(currentLevel.seed);
         GetComponent<BoxCollider>().size = new Vector3(currentLevel.levelSize.x * tileSize, 0.05f, currentLevel.levelSize.y * tileSize);
 
@@ -85,6 +98,7 @@ public class TileSpawner : MonoBehaviour
                 tileCoords.Add(new Coords(x, y));
             }
         }
+
         shuffledTileCoords = new Queue<Coords>(FYshuffle(tileCoords.ToArray(), currentLevel.seed));
 
         string container = "Generated";
@@ -96,14 +110,16 @@ public class TileSpawner : MonoBehaviour
         Transform levelContainer = new GameObject(container).transform;
         levelContainer.parent = transform;
 
+        // Tile Spawning
         for (int x = 0; x < currentLevel.levelSize.x; x++)
         {
             for (int y = 0; y < currentLevel.levelSize.y; y++)
             {
                 Vector3 tilePosition = CoordsToPos(x, y);
-                Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
+                Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90));
                 newTile.localScale = Vector3.one * tileScale * tileSize;
                 newTile.parent = levelContainer;
+                tileMap[x, y] = newTile;
             }
         }
 
@@ -112,6 +128,7 @@ public class TileSpawner : MonoBehaviour
 
         int wallsCount = (int)(currentLevel.levelSize.x * currentLevel.levelSize.y * currentLevel.wallsAmount);
         int currentWallsCount = 0;
+        List<Coords> openTileCoords = new List<Coords>(tileCoords);
 
         for (int i = 0; i < wallsCount; i++)
         {
@@ -127,6 +144,8 @@ public class TileSpawner : MonoBehaviour
                 Transform newWall = Instantiate(wallPrefab, wallPosition + Vector3.up * wallHeight / 2, Quaternion.identity);
                 newWall.parent = levelContainer;
                 newWall.localScale = new Vector3((tileScale) * tileSize, wallHeight, (tileScale) * tileSize);
+
+                openTileCoords.Remove(randomCoord);
             }
             else
             {
@@ -136,6 +155,9 @@ public class TileSpawner : MonoBehaviour
             }
         }
 
+        shuffledOpenTileCoords = new Queue<Coords>(FYshuffle(openTileCoords.ToArray(), currentLevel.seed));
+        
+        // Level navmesh masking bounds
         Transform leftBound = Instantiate(navMeshBounds, Vector3.left * (currentLevel.levelSize.x + maxLevelSize.x) / 4f * tileSize, Quaternion.identity);
         leftBound.parent = levelContainer;
         leftBound.localScale = new Vector3((maxLevelSize.x - currentLevel.levelSize.x) / 2f, 1, currentLevel.levelSize.y) * tileSize;
@@ -169,49 +191,6 @@ public class TileSpawner : MonoBehaviour
 	}
 
     // Checks if the map is fully accessible
-
-    // Checking each neighbor individually (SLOWER)
-    //private bool IsFullyAccessible(bool[,] wallsMap, int currentWallsAmount)
-    //{
-    //    bool[,] visitedTilesMap = new bool[wallsMap.GetLength(0), wallsMap.GetLength(1)];
-    //    Queue<Coords> queue = new Queue<Coords>();
-    //    queue.Enqueue(currentLevel.levelCenter);
-    //    visitedTilesMap[currentLevel.levelCenter.x, currentLevel.levelCenter.y] = true;
-
-    //    int accessibleTileCount = 1;
-
-    //    // DON'T TOUCH | IT'S HIDEOUS BUT IT WORKS
-    //    while (queue.Count > 0)
-    //    {
-    //        Coords tile = queue.Dequeue();
-
-    //        for (int x = -1; x <= 1; x++)
-    //        {
-    //            for (int y = -1; y <= 1; y++)
-    //            {
-    //                int neighbourTileX = tile.x + x;
-    //                int neighbourTileY = tile.y + y;
-    //                if (x == 0 || y == 0)
-    //                {
-    //                    if (neighbourTileX >= 0 && neighbourTileX < wallsMap.GetLength(0) && neighbourTileY >= 0 && neighbourTileY < wallsMap.GetLength(1))
-    //                    {
-    //                        if (!visitedTilesMap[neighbourTileX, neighbourTileY] && !wallsMap[neighbourTileX, neighbourTileY])
-    //                        {
-    //                            visitedTilesMap[neighbourTileX, neighbourTileY] = true;
-    //                            queue.Enqueue(new Coords(neighbourTileX, neighbourTileY));
-    //                            accessibleTileCount++;
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    int targetAccessibleTileCount = (int)(currentLevel.levelSize.x * currentLevel.levelSize.y - currentWallsAmount);
-    //    return targetAccessibleTileCount == accessibleTileCount;
-    //}
-
-    // Flood fill method (FASTER)
     private bool IsFullyAccessible(bool[,] wallsMap, int currentWallsAmount)
     {
         bool[,] visitedTilesMap = new bool[wallsMap.GetLength(0), wallsMap.GetLength(1)];
@@ -222,6 +201,7 @@ public class TileSpawner : MonoBehaviour
         return targetAccessibleTileCount == accessibleTileCount;
     }
 
+    // Flood fill method (FASTER)
     private int FloodFill(bool[,] wallsMap, bool[,] visitedTilesMap, int x, int y)
     {
         if (x < 0 || x >= wallsMap.GetLength(0) || y < 0 || y >= wallsMap.GetLength(1) || visitedTilesMap[x, y] || wallsMap[x, y])
@@ -247,6 +227,14 @@ public class TileSpawner : MonoBehaviour
         Coords randomCoord = shuffledTileCoords.Dequeue();
         shuffledTileCoords.Enqueue(randomCoord);
         return randomCoord;
+    }
+
+    // Gets a random unoccupied tile
+    public Transform GetRandomOpenTile()
+    {
+        Coords randomCoord = shuffledOpenTileCoords.Dequeue();
+        shuffledOpenTileCoords.Enqueue(randomCoord);
+        return tileMap[randomCoord.x, randomCoord.y];
     }
 
     // Convert 2D coords to 3D

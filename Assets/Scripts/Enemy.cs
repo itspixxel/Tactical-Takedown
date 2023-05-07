@@ -1,11 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using System;
 
 public class Enemy : Entity
 {
+    public static event System.Action OnDeathStatic;
+    
     public enum State
     {
         IDLE,
@@ -16,6 +19,7 @@ public class Enemy : Entity
 
     private NavMeshAgent agent;
     private GameObject target;
+    public GameObject deathEffect;
 
     private Entity targetEntity;
 
@@ -28,10 +32,14 @@ public class Enemy : Entity
     private float enemyCollisionRadius;
     private float playerCollisionRadius;
 
+    private void Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+    }
+
     protected override void Start()
     {
         base.Start();
-        agent = GetComponent<NavMeshAgent>();
 
         if (GameObject.FindGameObjectsWithTag("Player") != null )
         {
@@ -41,14 +49,27 @@ public class Enemy : Entity
             if (target != null)
             {
                 targetEntity = target.GetComponent<Entity>();
-                targetEntity.onDeath += onPlayerDeath;
-                enemyCollisionRadius = GetComponent<CapsuleCollider>().radius;
-                playerCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
+                targetEntity.OnDeath += OnPlayerDeath;
+                enemyCollisionRadius = GetComponentInChildren<CapsuleCollider>().radius;
+                playerCollisionRadius = target.GetComponentInChildren<CapsuleCollider>().radius;
             }
         }
     }
 
-    private void onPlayerDeath()
+    public override void TakeHit(float damage, Vector3 impactPoint, Vector3 impactDirection)
+    {
+        if (damage >= m_health)
+        {
+            if (OnDeathStatic != null)
+            {
+                OnDeathStatic();
+            }
+            Destroy(Instantiate(deathEffect, impactPoint, Quaternion.FromToRotation(Vector3.forward, impactDirection)), 2f); // Unity's good at mafs
+        }
+        base.TakeHit(damage, impactPoint, impactDirection);
+    }
+
+    private void OnPlayerDeath()
     {
         if (target = null)
         {
@@ -81,7 +102,7 @@ public class Enemy : Entity
                         Vector3 targetDir = (target.transform.position - transform.position).normalized;
                         Vector3 targetPos = target.transform.position - targetDir * (enemyCollisionRadius + playerCollisionRadius + attackDistance / 2);
 
-                        if (isAlive)
+                        if (!isDead)
                         {
                             agent.SetDestination(targetPos);
                         }
@@ -90,7 +111,7 @@ public class Enemy : Entity
             }
     }
 
-    IEnumerator Attack()
+    private IEnumerator Attack()
     {
         currentState = State.ATTACKING;
         agent.enabled = false;
@@ -121,5 +142,15 @@ public class Enemy : Entity
 
         currentState = State.CHASING;
         agent.enabled = true;
+    }
+
+    public void SetAttributes(float enemySpeed, float enemyHealth, int hitsToKill)
+    {
+        agent.speed = enemySpeed;
+        if (target != null)
+        {
+            damage = Mathf.Ceil(targetEntity.startingHealth / hitsToKill);
+        }
+        startingHealth = enemyHealth;
     }
 }
