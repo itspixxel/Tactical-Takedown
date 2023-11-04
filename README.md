@@ -1,4 +1,4 @@
-<div align="center"><img src="https://github.com/itspixxel/Tactical-Takedown/blob/maple/Assets/Textures/GameIcon.png" width=80></div>
+<div align="center"><img src="https://github.com/itspixxel/Tactical-Takedown/blob/amethyst/Assets/Textures/GameIcon.png" width=80></div>
 <h1 align="center">Sarthak (Pixx) Sachdeva</h1>
 <p align="center"><strong>Tactical Takedown</strong>
 <br><em>Procedurally generated 3D top-down shooter made with Unity</em></p>
